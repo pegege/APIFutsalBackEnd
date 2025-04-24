@@ -128,12 +128,12 @@ mongoose.connect(process.env.MONGODB_URI, {
     useUnifiedTopology: true,
 }).then(async () => {
     console.log('✅ MongoDB connected');
-    wipeDatabase(); // Descomentar para limpiar la base de datos
+    //wipeDatabase(); // Descomentar para limpiar la base de datos
 
     //await updateCurrentSeasonOnly(); // Actualiza la temporada actual al iniciar
 
     // Primera vez: full scrape
-    await fullScrape();
+    //await fullScrape();
 
     // Luego: solo temporada actual cada 2h
 
