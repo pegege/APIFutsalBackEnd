@@ -57,24 +57,26 @@ async function fullScrape() {
         console.log('🔄 Iniciando scrapeo COMPLETO (todas las temporadas)');
 
         console.log('⚽ Equipos');
-        await scrapeTeams();
+        //await scrapeTeams();
 
         console.log('🏃 Jugadores y vinculación');
         const teams = await Team.find();
-        await scrapeAndLinkPlayers(teams);
+        //await scrapeAndLinkPlayers(teams);
 
         console.log('🏆 Partidos');
-        await scrapeMatches();
+        //await scrapeMatches();
 
         console.log('📝 Convocados');
-        await scrapeConvocados();
+        //await scrapeConvocados();
 
         console.log('📋 Eventos');
+        
         const matches = await Match.find();
         
         for (const match of matches) {
             await scrapeEventsForMatch(match.link, match._id, match.season);
         }
+        
 
         console.log('✅ Scrapeo completo terminado');
     } catch (error) {
@@ -110,10 +112,10 @@ async function wipeDatabase() {
         });
 
         console.log('🧨 Borrando datos...');
-        await Match.deleteMany({});
-        await Player.deleteMany({});
-        await Team.deleteMany({});
-        await Event.deleteMany({}); // si tienes más modelos, añádelos aquí
+        //await Match.deleteMany({});
+        //await Player.deleteMany({});
+        //await Team.deleteMany({});
+        await Event.deleteMany({}); 
 
         console.log('✅ Base de datos limpia');
     } catch (err) {
@@ -133,7 +135,7 @@ mongoose.connect(process.env.MONGODB_URI, {
     //await updateCurrentSeasonOnly(); // Actualiza la temporada actual al iniciar
 
     // Primera vez: full scrape
-    //await fullScrape();
+    await fullScrape();
 
     // Luego: solo temporada actual cada 2h
 

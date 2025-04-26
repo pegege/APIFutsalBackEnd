@@ -92,10 +92,14 @@ async function scrapeEventsForMatch(matchUrl, matchId, season) {
             }
           }
         });
+        
 
         totalEvents++;
       }
     };
+
+      
+    
 
     const localPlayers = $('.team_local .block').toArray().filter(el => {
       const name = $(el).find('.name p.bold').text().trim();
@@ -122,7 +126,6 @@ async function scrapeEventsForMatch(matchUrl, matchId, season) {
       processPlayerEvents(block, match.awayTeam, 'Visitante', allVisitorPlayers)
     ));
 
-    // Save all updated players
     await Promise.all(Array.from(playerUpdates.values()).map(async ({ goals, yellowCards, redCards, doc }) => {
       if (goals.length) doc.goals.push(...goals);
       if (yellowCards.length) doc.yellowCards.push(...yellowCards);
@@ -130,9 +133,38 @@ async function scrapeEventsForMatch(matchUrl, matchId, season) {
       await doc.save();
     }));
 
+
+
+
+    let insertedEvents = [];
+
     if (eventBatch.length > 0) {
-      await Event.bulkWrite(eventBatch);
+      const rawEvents = eventBatch.map(e => e.insertOne.document);
+    
+      const nonDuplicateEvents = [];
+    
+      for (const event of rawEvents) {
+        const exists = await Event.findOne({
+          match: event.match,
+          player: event.player,
+          minute: event.minute,
+          type: event.type
+        });
+    
+        if (!exists) {
+          nonDuplicateEvents.push(event);
+        }
+      }
+    
+      if (nonDuplicateEvents.length > 0) {
+        insertedEvents = await Event.insertMany(nonDuplicateEvents);
+    
+        match.events.push(...insertedEvents.map(e => e._id));
+        await match.save();
+      }
     }
+    
+
 
     console.log(`🚀 Total eventos guardados: ${totalEvents}`);
   } catch (error) {
