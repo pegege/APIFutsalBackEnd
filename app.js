@@ -135,7 +135,7 @@ mongoose.connect(process.env.MONGODB_URI, {
     //await updateCurrentSeasonOnly(); // Actualiza la temporada actual al iniciar
 
     // Primera vez: full scrape
-    await fullScrape();
+    //await fullScrape();
 
     // Luego: solo temporada actual cada 2h
 
