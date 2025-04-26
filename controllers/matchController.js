@@ -92,8 +92,6 @@ exports.getMatchById = async (req, res) => {
         const matchId = req.params.id;
 
         const match = await Match.findById(matchId)
-            .populate('homePlayers', 'name nickname')
-            .populate('awayPlayers', 'name nickname')
             .populate('startingPlayersHome', 'name nickname')
             .populate('startingPlayersAway', 'name nickname')
             .populate('substitutesHome', 'name nickname')
