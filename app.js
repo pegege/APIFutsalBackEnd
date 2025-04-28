@@ -28,7 +28,22 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const CURRENT_SEASON = 2025; // 🎯 Solo esta se actualizará automáticamente
 
-app.use(cors());
+const allowedOrigins = [
+    'http://localhost:3000',         // tu frontend local
+    'https://tu-dominio-de-produccion.com'  // tu dominio final cuando tengas
+    ];
+
+app.use(cors({
+    origin: function (origin, callback) {
+        // Permitir requests de origenes conocidos o de herramientas como Postman (sin origin)
+        if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+        } else {
+        callback(new Error('CORS no permitido'));
+        }
+    }
+}));
+
 app.use(express.json());
 
 // 🔐 Middleware de seguridad
