@@ -30,8 +30,8 @@ const CURRENT_SEASON = 2025; // 🎯 Solo esta se actualizará automáticamente
 
 const allowedOrigins = [
     'http://localhost:3000',         // tu frontend local
-    'https://tu-dominio-de-produccion.com'  // tu dominio final cuando tengas
-    ];
+    'https://futsal-api-five.vercel.app'  // tu dominio final cuando tengas
+];
 
 app.use(cors({
     origin: function (origin, callback) {
