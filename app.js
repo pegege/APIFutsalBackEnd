@@ -112,9 +112,9 @@ async function wipeDatabase() {
         });
 
         console.log('🧨 Borrando datos...');
-        //await Match.deleteMany({});
-        //await Player.deleteMany({});
-        //await Team.deleteMany({});
+        await Match.deleteMany({});
+        await Player.deleteMany({});
+        await Team.deleteMany({});
         await Event.deleteMany({}); 
 
         console.log('✅ Base de datos limpia');

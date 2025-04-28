@@ -127,14 +127,31 @@ async function scrapeEventsForMatch(matchUrl, matchId, season) {
     ));
 
     await Promise.all(Array.from(playerUpdates.values()).map(async ({ goals, yellowCards, redCards, doc }) => {
-      if (goals.length) doc.goals.push(...goals);
-      if (yellowCards.length) doc.yellowCards.push(...yellowCards);
-      if (redCards.length) doc.redCards.push(...redCards);
+  
+      for (const goal of goals) {
+        const alreadyExists = doc.goals.some(g => g.match.toString() === goal.match.toString() && g.minute === goal.minute);
+        if (!alreadyExists) {
+          doc.goals.push(goal);
+        }
+      }
+    
+      for (const yellow of yellowCards) {
+        const alreadyExists = doc.yellowCards.some(y => y.match.toString() === yellow.match.toString() && y.minute === yellow.minute);
+        if (!alreadyExists) {
+          doc.yellowCards.push(yellow);
+        }
+      }
+    
+      for (const red of redCards) {
+        const alreadyExists = doc.redCards.some(r => r.match.toString() === red.match.toString() && r.minute === red.minute);
+        if (!alreadyExists) {
+          doc.redCards.push(red);
+        }
+      }
+    
       await doc.save();
     }));
-
-
-
+    
 
     let insertedEvents = [];
 
