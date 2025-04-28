@@ -76,7 +76,7 @@ async function fullScrape() {
 
         console.log('🏃 Jugadores y vinculación');
         const teams = await Team.find();
-        //await scrapeAndLinkPlayers(teams);
+        await scrapeAndLinkPlayers(teams);
 
         console.log('🏆 Partidos');
         //await scrapeMatches();
@@ -86,13 +86,14 @@ async function fullScrape() {
 
         console.log('📋 Eventos');
         
+        /*
         const matches = await Match.find();
         
         for (const match of matches) {
             await scrapeEventsForMatch(match.link, match._id, match.season);
         }
+        */
         
-
         console.log('✅ Scrapeo completo terminado');
     } catch (error) {
         console.error('❌ Error en fullScrape:', error);

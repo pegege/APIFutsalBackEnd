@@ -32,6 +32,8 @@ exports.getAllPlayers = async (req, res) => {
 
 // ADD new player
 exports.addPlayer = async (req, res) => {
+    console.log(req.body);
+
     try {
         const { name, position, team, age } = req.body;
         const newPlayer = await Player.create({ name, position, team, age });
@@ -50,7 +52,6 @@ exports.getPlayerById = async (req, res) => {
             .populate('matches')
             .populate('yellowCards')
             .populate('redCards');
-
         if (!player) {
             return res.status(404).json({ message: 'Player not found' });
         }

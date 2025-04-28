@@ -31,7 +31,6 @@ async function scrapePlayers(teamSlug, teamId, season) {
                 const nickname = $(el).find('.name.ta-l.name-nick p').last().text().trim();
                 const img = $(el).find('.ph5.img img').attr('src');
 
-                console.log(`👤 ${name} (${nickname}) - ${role}`);
                 if (name && nickname) {
                     players.push({
                         name,
@@ -39,7 +38,7 @@ async function scrapePlayers(teamSlug, teamId, season) {
                         img: img ? img : null,
                         position: role,
                         season,
-                        teamId: dbTeam._id, // guardamos el team id real
+                        teamId: dbTeam._id, 
                     });
                 }
             }
@@ -74,20 +73,20 @@ async function scrapeAndLinkPlayers(teams) {
                     const alreadyExists = existingPlayer.seasons.some(
                         (s) => s.season === player.season && s.team && s.team.toString() === player.teamId.toString()
                     );
-
+                
                     if (!alreadyExists) {
                         existingPlayer.seasons.push({ season: player.season, team: player.teamId });
-                        await existingPlayer.save();
                     }
-                } else {
-                    existingPlayer = await Player.create({
-                        name: player.name,
-                        nickname: player.nickname,
-                        img: player.img,
-                        position: player.role,
-                        seasons: [{ season: player.season, team: player.teamId }],
-                    });
+                
+                    // CORRECCIÓN: actualizar posición si no existe
+                    if (!existingPlayer.position && player.position) {
+                        existingPlayer.position = player.position;
+                    }
+                
+                    await existingPlayer.save();
+                    console.log(`Jugador ${existingPlayer.name} actualizado.`);
                 }
+                
 
                 await Team.updateOne(
                     { _id: player.teamId },

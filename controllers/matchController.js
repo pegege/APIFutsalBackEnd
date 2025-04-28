@@ -99,7 +99,8 @@ exports.getMatchById = async (req, res) => {
             .populate('notPlayedHome', 'name nickname position')
             .populate('notPlayedAway', 'name nickname position')
             .populate('homeTeam', 'name logoLink')
-            .populate('awayTeam', 'name logoLink');
+            .populate('awayTeam', 'name logoLink')
+            .populate('events', 'type player minute description');
 
         if (!match) {
             return res.status(404).json({ message: 'Partido no encontrado' });
