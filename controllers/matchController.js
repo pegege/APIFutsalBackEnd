@@ -92,12 +92,12 @@ exports.getMatchById = async (req, res) => {
         const matchId = req.params.id;
 
         const match = await Match.findById(matchId)
-            .populate('startingPlayersHome', 'name nickname')
-            .populate('startingPlayersAway', 'name nickname')
-            .populate('substitutesHome', 'name nickname')
-            .populate('substitutesAway', 'name nickname')
-            .populate('notPlayedHome', 'name nickname')
-            .populate('notPlayedAway', 'name nickname')
+            .populate('startingPlayersHome', 'name nickname position')
+            .populate('startingPlayersAway', 'name nickname position')
+            .populate('substitutesHome', 'name nickname position')
+            .populate('substitutesAway', 'name nickname position')
+            .populate('notPlayedHome', 'name nickname position')
+            .populate('notPlayedAway', 'name nickname position')
             .populate('homeTeam', 'name logoLink')
             .populate('awayTeam', 'name logoLink');
 
