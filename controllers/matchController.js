@@ -68,24 +68,25 @@ exports.addMatch = async (req, res) => {
 // GET matches by team name (with players)
 exports.getMatchByTeam = async (req, res) => {
     try {
-        const teamName = String(req.params.teamName || '');
-        const regex = new RegExp(teamName, 'i');
-
-        const matches = await Match.find()
-            .populate('startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway')
-            .populate('events');
-
-        const filtered = matches.filter(m =>
-            (m.homeTeam && regex.test(m.homeTeam.name)) ||
-            (m.awayTeam && regex.test(m.awayTeam.name))
-        );
-
-        res.status(200).json(filtered);
+      const teamName = String(req.params.teamName || '');
+      const regex = new RegExp(teamName, 'i');
+  
+      const matches = await Match.find({
+        $or: [
+          { "homeTeam.name": regex },
+          { "awayTeam.name": regex }
+        ]
+      })
+      .populate('startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway')
+      .populate('events');
+  
+      res.status(200).json(matches);
     } catch (error) {
-        console.error('❌ Error en getMatchByTeam:', error.message);
-        res.status(500).json({ message: 'Error fetching matches', error });
+      console.error('❌ Error en getMatchByTeam:', error.message);
+      res.status(500).json({ message: 'Error fetching matches', error });
     }
-};
+  };
+  
 
 // GET match by ID
 exports.getMatchById = async (req, res) => {
