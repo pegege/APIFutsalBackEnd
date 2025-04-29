@@ -16,7 +16,7 @@ exports.getAllMatches = async (req, res) => {
         const matchesQuery = Match.find(query)
             .populate('homeTeam', 'name')
             .populate('awayTeam', 'name')
-            .populate('events')
+            .populate('events', 'type player minute description')
             .skip(skip)
             .limit(parseInt(limit));
 
@@ -74,24 +74,34 @@ exports.getMatchByTeam = async (req, res) => {
       const page = parseInt(req.query.page) || 1;
       const limit = parseInt(req.query.limit) || 20;
       const skip = (page - 1) * limit;
+    
+      const team = await Team.findOne({ name: regex });
+  
+      if (!team) {
+        console.log('⚠️ No se encontró ningún equipo con ese nombre');
+        return res.status(404).json({ message: 'Team not found' });
+      }
   
       const total = await Match.countDocuments({
         $or: [
-          { "homeTeam.name": regex },
-          { "awayTeam.name": regex }
+          { homeTeam: team._id },
+          { awayTeam: team._id }
         ]
       });
   
       const matches = await Match.find({
         $or: [
-          { "homeTeam.name": regex },
-          { "awayTeam.name": regex }
+          { homeTeam: team._id },
+          { awayTeam: team._id }
         ]
       })
       .skip(skip)
       .limit(limit)
-      .populate('startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway')
-      .populate('events');
+      .populate({
+        path: 'startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway',
+        select: 'name _id'
+        })
+        .populate('events', 'type player minute description');
   
       res.status(200).json({
         page,
@@ -100,6 +110,7 @@ exports.getMatchByTeam = async (req, res) => {
         totalPages: Math.ceil(total / limit),
         data: matches
       });
+  
     } catch (error) {
       console.error('❌ Error en getMatchByTeam:', error.message);
       res.status(500).json({ message: 'Error fetching matches', error });
@@ -143,8 +154,13 @@ exports.getSeasonMatches = async (req, res) => {
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
         const matches = await Match.find({ season })
-            .populate('startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway')
-            .populate('events')
+            .populate('startingPlayersHome', 'name nickname position')
+            .populate('startingPlayersAway', 'name nickname position')
+            .populate('substitutesHome', 'name nickname position')
+            .populate('substitutesAway', 'name nickname position')
+            .populate('notPlayedHome', 'name nickname position')
+            .populate('notPlayedAway', 'name nickname position')
+            .populate('events', 'type player minute description')
             .skip(skip)
             .limit(parseInt(limit));
 
