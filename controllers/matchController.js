@@ -16,6 +16,7 @@ exports.getAllMatches = async (req, res) => {
         const matchesQuery = Match.find(query)
             .populate('homeTeam', 'name')
             .populate('awayTeam', 'name')
+            .populate('events')
             .skip(skip)
             .limit(parseInt(limit));
 
@@ -72,7 +73,8 @@ exports.getMatchByTeam = async (req, res) => {
 
         const matches = await Match.find()
             .populate('homeTeam awayTeam')
-            .populate('homePlayers awayPlayers startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway');
+            .populate('startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway')
+            .populate('events');
 
         const filtered = matches.filter(m =>
             (m.homeTeam && regex.test(m.homeTeam.name)) ||
@@ -122,6 +124,7 @@ exports.getSeasonMatches = async (req, res) => {
 
         const matches = await Match.find({ season })
             .populate('homePlayers awayPlayers startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway')
+            .populate('events')
             .skip(skip)
             .limit(parseInt(limit));
 
