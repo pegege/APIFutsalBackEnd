@@ -72,7 +72,6 @@ exports.getMatchByTeam = async (req, res) => {
         const regex = new RegExp(teamName, 'i');
 
         const matches = await Match.find()
-            .populate('homeTeam awayTeam')
             .populate('startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway')
             .populate('events');
 
@@ -123,7 +122,7 @@ exports.getSeasonMatches = async (req, res) => {
         const skip = (parseInt(page) - 1) * parseInt(limit);
 
         const matches = await Match.find({ season })
-            .populate('homePlayers awayPlayers startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway')
+            .populate('startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway')
             .populate('events')
             .skip(skip)
             .limit(parseInt(limit));
@@ -157,7 +156,7 @@ exports.getMatchBySeasonByTeam = async (req, res) => {
         const matches = await Match.find({
             $or: [{ homeTeam: team._id }, { awayTeam: team._id }],
             season
-        }).populate('homePlayers awayPlayers startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway');
+        }).populate('startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway');
 
         res.status(200).json(matches);
     } catch (error) {
