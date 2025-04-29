@@ -99,3 +99,19 @@ exports.getPlayerByTeam = async (req, res) => {
         res.status(500).json({ message: 'Error fetching player', error: error.message });
     }
 };
+
+
+//Buscar jugador por nombre
+exports.getPlayerByName = async (req, res) => {
+    try{
+        const playerName = req.params.name;
+        const player = await Player.findOne({name: new RegExp(playerName, 'i')});
+        if(!player){
+            return res.status(404).json({message: `No se encontró un jugador con el nombre parecido a '${playerName}'`});
+        }
+        res.status(200).json(player);
+    } catch (error) {
+        res.status(500).json({message: 'Error fetching player', error: error.message});
+    }
+}
+

@@ -3,6 +3,7 @@ const cors = require('cors');
 const express = require('express');
 const mongoose = require('mongoose');
 const cron = require('node-cron');
+const rateLimit = require('express-rate-limit');
 
 const matchRoutes = require('./routes/matchRoutes.js');
 const playerRoutes = require('./routes/playerRoutes.js');
@@ -27,6 +28,21 @@ const Event = require('./models/eventModel.js');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const CURRENT_SEASON = 2025; // 🎯 Solo esta se actualizará automáticamente
+
+// Configuración del rate limiter
+const limiter = rateLimit({
+    windowMs: 5 * 1000, // 5 segundos
+    max: 100, // límite de 100 peticiones por IP
+    message: {
+        status: 429,
+        message: '⚠️ Demasiadas peticiones desde esta IP. Por favor, inténtalo de nuevo en 5 segundos.'
+    },
+    standardHeaders: true, // Retorna información del rate limit en los headers
+    legacyHeaders: false, // Desactiva los headers legacy
+});
+
+// Aplicar rate limiting a todas las rutas
+app.use(limiter);
 
 const allowedOrigins = [
     'http://localhost:3000',         // tu frontend local
