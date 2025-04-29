@@ -71,21 +71,41 @@ exports.getMatchByTeam = async (req, res) => {
       const teamName = String(req.params.teamName || '');
       const regex = new RegExp(teamName, 'i');
   
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 20;
+      const skip = (page - 1) * limit;
+  
+      const total = await Match.countDocuments({
+        $or: [
+          { "homeTeam.name": regex },
+          { "awayTeam.name": regex }
+        ]
+      });
+  
       const matches = await Match.find({
         $or: [
           { "homeTeam.name": regex },
           { "awayTeam.name": regex }
         ]
       })
+      .skip(skip)
+      .limit(limit)
       .populate('startingPlayersHome startingPlayersAway substitutesHome substitutesAway notPlayedHome notPlayedAway')
       .populate('events');
   
-      res.status(200).json(matches);
+      res.status(200).json({
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        data: matches
+      });
     } catch (error) {
       console.error('❌ Error en getMatchByTeam:', error.message);
       res.status(500).json({ message: 'Error fetching matches', error });
     }
   };
+  
   
 
 // GET match by ID
